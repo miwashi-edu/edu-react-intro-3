@@ -112,6 +112,26 @@ export default Gomoku;
 EOF
 ```
 
+## ./src/stories/Gomoku.stories.js
+
+```bash
+cat > ./src/stories/Gomoku.stories.js << EOF
+import React from 'react';
+import Gomoku from "../components/Gomoku";
+
+export default {
+    title: 'Gomoku/Gomoku',
+    component: Gomoku,
+    parameters: { layout: 'centered' },
+};
+
+const Template = (args) => <Gomoku {...args} />;
+
+// Since the Gomoku component doesn't have any props, we don't need args
+export const Default = Template.bind({});
+EOF
+```
+
 
 
 

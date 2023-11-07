@@ -93,21 +93,19 @@ EOF
 
 ```bash
 cat > ./src/components/Gomoku/Gomoku.jsx << EOF
-import React,{ useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 import './gomoku.css';
 
-const Gomoku = ({...props }) => {
-    
+const Gomoku = (props) => {
   useEffect(() => {
-        
-    });
+    console.log('Component mounted or updated');
+  });
 
-    return (
-            <>
-                <h1>Gomoku</h1>
-            </>
-    );
+  return (
+    <div>
+      <h1>Gomoku</h1>
+    </div>
+  );
 };
 
 export default Gomoku;

@@ -1,133 +1,137 @@
 # edu-react-intro-3
 
-## Create Project
+## Instructions
 
 ```bash
-#
 cd ~
 cd ws
-rm -rf react-app # If it exists from before.
-
-#Create directory for react application
-mkdir react-app && cd react-app
-
-# Initialize a new Node.js project
-npm init -y
-
-# Install React, ReactDOM, and React Scripts
-npm install react react-dom 
-npm install -D react-scripts
-
-# Set up scripts in package.json
-npm pkg set scripts.start="react-scripts start"
-npm pkg set scripts.build="react-scripts build"
-npm pkg set scripts.test="react-scripts test"
-npm pkg set scripts.eject="react-scripts eject"
-
-mkdir {src,public}
-touch ./src/App.js
-touch ./src/App.css
-touch ./src/index.js
-touch ./public/index.html
+cd react-app
+npx storybook init
 ```
 
-## Skapa App.js
-
-> Copy paste this as whole and run all at once.
+## Remove Demo
 
 ```bash
-# Create a basic App component
-cat > src/App.js << 'EOF'
-import React from 'react';
-import ReactDOM from 'react-dom';
+rm ./src/stories/*.jsx
+rm ./src/stories/*.css
+rm ./src/stories/*.js
+rm ./src/stories/*.mdx
+```
 
-function App() {
-  return (
-    <div>
-      <h1>Hello, React!</h1>
-    </div>
-  );
-}
-export default App;
+## Add new component
+
+```bash
+mkdir -p ./src/components/Gomoku
+touch ./src/components/Gomoku/Gomoku.jsx
+touch ./src/components/Gomoku/gomoku.css
+touch ./src/components/Gomoku/index.js
+touch ./src/stories/Gomoku.stories.js
+```
+
+## ./.storybook/main.js
+
+```
+cat > ./.storybook/main.js  << EOF
+/** @type { import('@storybook/react-webpack5').StorybookConfig } */
+const config = {
+  stories: [
+    "../src/stories/**/*.mdx",
+    "../src/stories/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+  ],
+  addons: [
+    "@storybook/addon-links",
+    "@storybook/addon-essentials",
+    "@storybook/addon-onboarding",
+    "@storybook/addon-interactions",
+  ],
+  framework: {
+    name: "@storybook/react-webpack5",
+    options: {},
+  },
+  docs: {
+    autodocs: "tag",
+  },
+};
+export default config;
 EOF
 ```
 
-## Create index.js
-
-> Copy paste this as whole and run all at once.
+## ./src/stories/Configure.mdx
 
 ```bash
-# Create a basic index.js file
-cat > src/index.js << 'EOF'
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
+cat > ./src/stories/Configure.mdx << 'EOF'
+import { Meta, Story, Preview } from '@storybook/addon-docs/blocks';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+<Meta title="Your Component Title" />
+
+# Your Component Title
+
+An introduction to your component.
+
+<Preview>
+  <Story name="Basic">
+    
+  </Story>
+</Preview>
 EOF
 ```
 
-# Create index.html
-
-> Copy paste this as whole and run all at once.
+## ./src/components/Gomoku/index.js
 
 ```bash
-# Create a basic index.html file
-cat > public/index.html << 'EOF'
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>React App</title>
-</head>
-<body>
-    <div id="root"></div>
-</body>
-</html>
+cat > ./src/components/Gomoku/index.js << EOF
+//for bundling
+export {default as Gomoku} from "./Gomoku"
+
+//for storybook
+export {default} from "./Gomoku"
+
 EOF
 ```
 
-## Run the application first time
-
-> You will be asked to add browser support to your package.json, accept that!
+## ./src/components/Gomoku/Gomoku.jsx
 
 ```bash
-# Start the application
-npm start
+cat > ./src/components/Gomoku/Gomoku.jsx << EOF
+import React,{ useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import './gomoku.css';
 
-? We're unable to detect target browsers.
+const Gomoku = ({ cols, rows, tileSize, ...props }) => {
+    const canvasRef = useRef(null);
 
-Would you like to add the defaults to your package.json? › (Y/n)y
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+
+        canvas.cols = cols * tileSize;
+        canvas.rows = rows * tileSize;
+
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(0, 0, cols *tileSize, rows * tileSize);
+    }, [cols, rows]);
+
+    return (
+            <canvas ref={canvasRef} width={cols * tileSize} height={rows * tileSize}></canvas>
+    );
+};
+
+Gomoku.propTypes = {
+    cols: PropTypes.number,
+    rows: PropTypes.number,
+    tileSize: PropTypes.number,
+};
+
+Gomoku.defaultProps = {
+    cols: 16,
+    rows: 16,
+    tileSize: 10,
+};
+
+export default Gomoku;
+EOF
 ```
 
-### Added to your package.json
-
-> Just answer yes, and this will be added.
-> This tells the transpiler what requirement your application will support.
-
-```json
-"browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
-```
-## Add the missing dependency
-
-> Add  --loglevel=error or --silent when adding development dependencies, otherwise react-scripts will warn.
-
-```
-npm install -D @babel/plugin-proposal-private-property-in-object  --loglevel=error
-```
 
 
 
